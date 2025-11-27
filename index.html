@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Starts at 05:13</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-color: #e0e0e0;
+            --glitch-color-1: #0ff;
+            --glitch-color-2: #f0f;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Space Mono', monospace;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CRT Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 51;
+        }
+
+        /* Glitch Animation Classes */
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text {
+            position: relative;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            color: var(--text-color);
+            z-index: 10;
+        }
+
+        /* The specific time element */
+        #time-display {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .glitching {
+            animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: transparent; 
+            text-shadow: 2px 0 var(--glitch-color-1), -2px 0 var(--glitch-color-2);
+        }
+
+        .glitching::before,
+        .glitching::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitching::before {
+            color: var(--glitch-color-1);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            transform: translate(-2px, 0);
+            z-index: -1;
+        }
+
+        .glitching::after {
+            color: var(--glitch-color-2);
+            animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+            clip-path: polygon(0 80%, 100% 20%, 100% 100%, 0 100%);
+            transform: translate(2px, 0);
+            z-index: -2;
+        }
+
+        /* Keyframes */
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(-2deg); }
+            40% { transform: skew(2deg); }
+            60% { transform: skew(-1deg); }
+            80% { transform: skew(1deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(10% 0 60% 0); transform: translate(-1px, 1px); }
+            100% { clip-path: inset(30% 0 40% 0); transform: translate(1px, -1px); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, 1px); }
+            20% { clip-path: inset(80% 0 5% 0); transform: translate(-2px, -1px); }
+            40% { clip-path: inset(30% 0 20% 0); transform: translate(2px, 2px); }
+            60% { clip-path: inset(10% 0 80% 0); transform: translate(-2px, -2px); }
+            80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, 1px); }
+            100% { clip-path: inset(70% 0 10% 0); transform: translate(-1px, -1px); }
+        }
+
+        /* Subtle noise animation for background */
+        .noise {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            width: 200%;
+            height: 200vh;
+            background: transparent url('http://assets.iceable.com/img/noise-transparent.png') repeat 0 0;
+            background-repeat: repeat;
+            animation: bg-animation .2s infinite;
+            opacity: .05;
+            visibility: visible;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes bg-animation {
+            0% { transform: translate(0,0) }
+            10% { transform: translate(-5%,-5%) }
+            20% { transform: translate(-10%,5%) }
+            30% { transform: translate(5%,-10%) }
+            40% { transform: translate(-5%,15%) }
+            50% { transform: translate(-10%,5%) }
+            60% { transform: translate(15%,0) }
+            70% { transform: translate(0,10%) }
+            80% { transform: translate(-15%,0) }
+            90% { transform: translate(10%,5%) }
+            100% { transform: translate(5%,0) }
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 10px;
+            height: 1em;
+            background-color: var(--text-color);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="noise"></div>
+
+    <main class="relative z-10 text-center flex flex-col items-center justify-center p-4">
+        <div class="fade-in mb-4 text-gray-400 text-sm md:text-base tracking-widest uppercase opacity-0" style="animation-delay: 0.5s;">
+            System Reboot...
+        </div>
+
+        <h1 class="glitch-text mb-2">
+            <span class="opacity-0 fade-in" style="animation-delay: 1.5s;">life starts at</span>
+            <br class="md:hidden" />
+            <span id="time-wrapper" class="inline-block relative ml-2">
+                <span id="time-display" class="opacity-0 fade-in" style="animation-delay: 2.5s;" data-text="50:13">50:13</span>
+            </span>
+        </h1>
+
+        <div class="mt-12 opacity-0 fade-in" style="animation-delay: 5s;">
+            <div class="text-xs text-gray-600 font-light tracking-widest">
+                <span id="status-text">SYNCING TIMELINE</span><span class="cursor-blink"></span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const timeDisplay = document.getElementById('time-display');
+            const statusText = document.getElementById('status-text');
+            const targetTime = "05:13";
+            const initialTime = "50:13";
+            
+            // Configuration
+            const startDelay = 4000; // Time before glitch starts (ms)
+            const glitchDuration = 800; // How long the chaotic glitch lasts
+            
+            // Characters to use for random scrambling
+            const chars = '0123456789!@#$%^&*()';
+
+            const randomChar = () => chars[Math.floor(Math.random() * chars.length)];
+
+            const scrambleText = (element) => {
+                const originalText = element.innerText;
+                const length = originalText.length;
+                let iterations = 0;
+                
+                const interval = setInterval(() => {
+                    element.innerText = originalText
+                        .split('')
+                        .map((letter, index) => {
+                            if (letter === ':') return ':'; // Keep colon stable mostly
+                            return randomChar();
+                        })
+                        .join('');
+                    
+                    iterations++;
+                    if (iterations > 10) clearInterval(interval);
+                }, 50);
+            };
+
+            const triggerGlitch = () => {
+                // 1. Add Glitch CSS Classes
+                timeDisplay.classList.add('glitching');
+                statusText.innerText = "ERROR: CORRUPTION DETECTED";
+                statusText.style.color = "#ff3333";
+
+                // 2. Scramble logic during the glitch
+                let scrambleInterval = setInterval(() => {
+                    timeDisplay.innerText = 
+                        randomChar() + randomChar() + ":" + randomChar() + randomChar();
+                    // Update data-text for CSS ::before/::after effects
+                    timeDisplay.setAttribute('data-text', timeDisplay.innerText);
+                }, 50);
+
+                // 3. Resolve to new time
+                setTimeout(() => {
+                    clearInterval(scrambleInterval);
+                    
+                    // Final state
+                    timeDisplay.innerText = targetTime;
+                    timeDisplay.setAttribute('data-text', targetTime);
+                    
+                    // Remove heavy glitch, maybe leave a subtle shake or just clean
+                    timeDisplay.classList.remove('glitching');
+                    
+                    // Update status
+                    statusText.innerText = "TIMELINE RESTORED";
+                    statusText.style.color = "#33ff33"; // Green
+
+                }, glitchDuration);
+            };
+
+            // Start the sequence
+            setTimeout(triggerGlitch, startDelay);
+
+            // Optional: Interactive Glitch on hover after sequence
+            timeDisplay.addEventListener('mouseenter', () => {
+                if (timeDisplay.innerText === targetTime) {
+                   timeDisplay.style.textShadow = "2px 0 #0ff, -2px 0 #f0f";
+                }
+            });
+            timeDisplay.addEventListener('mouseleave', () => {
+                timeDisplay.style.textShadow = "0 0 10px rgba(255, 255, 255, 0.5)";
+            });
+        });
+    </script>
+</body>
+</html>
